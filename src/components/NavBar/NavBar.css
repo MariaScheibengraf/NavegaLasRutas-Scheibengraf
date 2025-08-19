@@ -1,0 +1,45 @@
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f9f4ec;
+  padding: 0.8rem 2rem;
+  border-bottom: 2px solid #d4cfc4;
+  font-family: Arial, sans-serif;
+}
+
+
+.nav-logo img {
+  height: 100px;
+  width: auto;
+  display: block;
+}
+
+.nav-categorias {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-categorias li a {
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #2c5530;
+  transition: color 0.3s ease;
+}
+
+.nav-categorias li a:hover {
+  color: #4a7856;
+}
+
+.nav-carrito {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c5530;
+  display: flex;
+  align-items: center;
+}
