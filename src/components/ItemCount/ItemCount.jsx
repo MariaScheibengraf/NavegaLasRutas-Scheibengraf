@@ -1,37 +1,44 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
-const ItemCount = () => {
+const ItemCount = ({ stock = 15, initial = 1, onAdd }) => {
+  const [contador, setContador] = useState(initial);
 
-    const [contador, setContador] = useState(1)
-
-    const incrementar = () => {
-        if (contador < 15) {
-            setContador(contador + 1)
-        }
+  const incrementar = () => {
+    if (contador < stock) {
+      setContador(contador + 1);
     }
+  };
 
-    const decrementar = () => {
-        if (contador > 1) {
-            setContador(contador - 1)
-        }
+  const decrementar = () => {
+    if (contador > 1) {
+      setContador(contador - 1);
     }
+  };
 
-    console.log(contador)
+useEffect(() => {
+  const prev = document.title;
+  document.title = `Contador: ${contador}`;
+  return () => { document.title = prev; };
+}, [contador]);
 
-    useEffect(() => {
-    /* Acá adentro de la funcion coloco lo que quiero que se ejecute como efecto secundario */
-    document.title = `Contador: ${contador}`
-    console.log("el componente se actualizó " + contador)
-    }, [contador])
 
-    return (
-        <div>
-            <h2>Contador</h2>
-            <button onClick={incrementar}> + </button>
-            <p>{contador}</p>
-            <button onClick={decrementar}> - </button>
-        </div>
-    )
-}
+  return (
+    <div className="item-count">
+      <button onClick={decrementar} disabled={contador <= 1}>−</button>
+      <span style={{ padding: "0 12px" }}>{contador}</span>
+      <button onClick={incrementar} disabled={contador >= stock}>+</button>
 
-export default ItemCount
+      <button
+        onClick={() => onAdd(contador)}
+        disabled={stock < 1}
+        style={{ marginLeft: 12 }}
+      >
+        Agregar al carrito
+      </button>
+
+      {stock < 1 && <p>Producto sin stock</p>}
+    </div>
+  );
+};
+
+export default ItemCount;

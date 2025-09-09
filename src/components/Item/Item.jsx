@@ -1,5 +1,7 @@
-import React from "react";
+// src/components/Item/Item.jsx
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 import "./Item.css";
 
 const formatoARS = (n) =>
@@ -9,13 +11,22 @@ const formatoARS = (n) =>
     maximumFractionDigits: 0
   }).format(Number(n));
 
-const toSlug = (nombre) =>
-  nombre.toLowerCase().includes("monstera") ? "monstera"
-  : nombre.toLowerCase().includes("sansevieria") ? "sansevieria"
-  : nombre.toLowerCase().includes("potus") ? "potus"
-  : "ficus";
+const Item = ({ id, nombre, precio, imagen, stock = 0 }) => {
+  const { addToCart } = useCart();
+  const [adding, setAdding] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
 
-const Item = ({ id, nombre, precio, imagen }) => {
+  const quickAdd = () => {
+    if (adding || stock < 1) return;
+    setAdding(true);
+    addToCart({ id, nombre, precio, imagen, stock }, 1);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1200);
+    setAdding(false);
+  };
+
+  const label = stock < 1 ? "Sin stock" : justAdded ? "Agregado ✓" : "Agregar al carrito";
+
   return (
     <article className="card">
       <img className="card__img" src={imagen} alt={nombre} />
@@ -23,8 +34,17 @@ const Item = ({ id, nombre, precio, imagen }) => {
         <h3 className="card__title">{nombre}</h3>
         <p className="card__price">{formatoARS(precio)}</p>
         <div className="card__actions">
-          <button type="button">Agregar al carrito</button>
-          <Link to={`/producto/${toSlug(nombre)}`} className="btn-sec">
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={quickAdd}
+            disabled={adding || stock < 1}
+            aria-label={`Agregar ${nombre} al carrito`}
+          >
+            {label}
+          </button>
+
+          <Link to={`/producto/${id}`} className="btn">
             Ver detalle
           </Link>
         </div>

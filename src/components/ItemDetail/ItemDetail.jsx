@@ -1,4 +1,7 @@
-import React from "react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import ItemCount from "../ItemCount/ItemCount";
+import { useCart } from "../../context/CartContext";
 import "./ItemDetail.css";
 
 const formatoARS = (n) =>
@@ -6,39 +9,47 @@ const formatoARS = (n) =>
     style: "currency",
     currency: "ARS",
     maximumFractionDigits: 0,
-  }).format(n);
+  }).format(Number(n));
 
-const ItemDetail = ({ id, nombre, precio, imagen, descripcion, onClose }) => {
-  if (!id) return null;
+export default function ItemDetail({
+  id,
+  nombre,
+  precio,
+  imagen,
+  stock = 10,
+  descripcion = "Producto sin descripción."
+}) {
+  const { addToCart } = useCart();
+  const [addedQty, setAddedQty] = useState(0);
+
+  const handleAdd = (qty) => {
+    addToCart({ id, nombre, precio, imagen, stock }, qty);
+    setAddedQty(qty);
+  };
 
   return (
-    <article className="item-detail">
-      <img className="item-detail__img" src={imagen} alt={nombre} />
-      <div>
-        <h2 className="item-detail__title">{nombre}</h2>
+    <section className="item-detail__wrap">
+      <article className="item-detail">
+        <img src={imagen} alt={nombre} className="item-detail__img" />
 
-        {descripcion && (
+        <div>
+          <h2 className="item-detail__title">{nombre}</h2>
           <p className="item-detail__desc">{descripcion}</p>
-        )}
+          <p className="item-detail__price">{formatoARS(precio)}</p>
 
-        <p className="item-detail__price">{formatoARS(precio)}</p>
+          {stock < 1 && <p>Producto sin stock</p>}
 
-        <div className="item-detail__actions">
-          <button type="button" className="btn btn--primary">
-            Agregar al carrito
-          </button>
-
-          <button
-            type="button"
-            className="btn btn--secondary"
-            onClick={onClose}
-          >
-            cerrar
-          </button>
+          {addedQty === 0 ? (
+            <ItemCount stock={stock} initial={1} onAdd={handleAdd} />
+          ) : (
+            <div className="item-detail__actions">
+              <p>Agregaste {addedQty} al carrito.</p>
+              <Link to="/cart" className="btn btn--primary">Ir al carrito</Link>
+              <Link to="/" className="btn btn--secondary">Seguir comprando</Link>
+            </div>
+          )}
         </div>
-      </div>
-    </article>
+      </article>
+    </section>
   );
-};
-
-export default ItemDetail;
+}

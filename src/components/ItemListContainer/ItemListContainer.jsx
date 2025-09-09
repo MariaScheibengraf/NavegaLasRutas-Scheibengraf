@@ -1,34 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { getProductos } from "../../asyncmock";
+import { useParams } from "react-router-dom";
 import ItemList from "../ItemList/ItemList";
+import { fetchProducts } from "../../services/firebase";
 
-const ItemListContainer = () => {
+export default function ItemListContainer() {
+  const { categoryId } = useParams(); // "interior" | "exterior" | undefined
   const [productos, setProductos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    let live = true;
-    (async () => {
-      try {
-        setLoading(true);
-        const data = await getProductos();
-        if (live) setProductos(data);
-      } catch (e) {
-        if (live) setError(e.message || "error al cargar productos");
-      } finally {
-        if (live) setLoading(false);
-      }
-    })();
-    return () => {
-      live = false;
-    };
-  }, []);
+    let vivo = true;
+    setCargando(true);
 
-  if (loading) return <p className="tenue">cargando productos…</p>;
+    fetchProducts(categoryId)
+      .then((data) => { if (vivo) setProductos(data); })
+      .catch((e) => { if (vivo) setError(e.message || "error al cargar"); })
+      .finally(() => { if (vivo) setCargando(false); });
+
+    return () => { vivo = false; };
+  }, [categoryId]);
+
+  if (cargando) return <p className="tenue">cargando productos…</p>;
   if (error) return <p style={{ color: "crimson" }}>{error}</p>;
+  if (!productos.length) return <p>no hay productos{categoryId ? ` en ${categoryId}` : ""}</p>;
 
   return <ItemList productos={productos} />;
-};
-
-export default ItemListContainer;
+}

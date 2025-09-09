@@ -1,98 +1,41 @@
-// src/App.jsx
 import "./App.css";
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import NavBar from "./components/NavBar/NavBar";
 import GanadoresSorteo from "./components/JsonPlaceHolder/GanadoresSorteo";
-
-import Monstera from "./components/Monstera/Monstera";
-import Sansevieria from "./components/Sansevieria/Sansevieria";
-import Potus from "./components/Potus/Potus";
-import Ficus from "./components/Ficus/Ficus";
-import { productos } from "./asyncmock";
+import ItemListContainer from "./components/ItemListContainer/ItemListContainer";
+import ItemDetailContainer from "./components/ItemDetailContainer/ItemDetailContainer";
+import Cart from "./components/Cart/Cart";
+import { CartProvider } from "./context/CartContext";
+import Home from "./components/Home/Home";
+import CheckoutForm from "./components/CheckoutForm/CheckoutForm";
 
 export default function App() {
-  const [cartCount, setCartCount] = useState(0);
-
-  const handleAddToCart = (qty = 1) => {
-    const n = Number.isFinite(qty) ? qty : 1;
-    setCartCount((c) => c + Math.max(0, n));
-  };
-
-  const homeItems = [
-    { key: "monstera", to: "/monstera" },
-    { key: "sansevieria", to: "/sansevieria" },
-    { key: "potus", to: "/potus" },
-    { key: "ficus", to: "/ficus" },
-  ];
-
   return (
-    <BrowserRouter>
-      <div className="app">
-        <NavBar cartCount={cartCount} />
+    <CartProvider>
+      <BrowserRouter>
+        <NavBar />
         <main>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  <h2 className="titulo-seccion">
-                    Bienvenid@ a VivaVerde. Elegí tus plantas favoritas 🌿
-                  </h2>
-
-                  <ul className="homegrid">
-                    {homeItems.map(({ key, to }) => {
-                      const p = productos.find((x) =>
-                        x.nombre.toLowerCase().includes(key)
-                      );
-                      if (!p) return null;
-                      return (
-                        <li className="homecard" key={key}>
-                          <img className="homecard__img" src={p.imagen} alt={p.nombre} />
-                          <div className="homecard__body">
-                            <h3 className="homecard__title">{p.nombre}</h3>
-                            <Link className="btn btn--primary" to={to}>
-                              ver detalles
-                            </Link>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-
-                  <GanadoresSorteo />
-                </>
-              }
-            />
-
-            <Route path="/monstera" element={<Monstera onAddToCart={handleAddToCart} />} />
-            <Route path="/sansevieria" element={<Sansevieria onAddToCart={handleAddToCart} />} />
-            <Route path="/potus" element={<Potus onAddToCart={handleAddToCart} />} />
-            <Route path="/ficus" element={<Ficus onAddToCart={handleAddToCart} />} />
-
-            <Route
-              path="/sorteo"
-              element={
-                <>
-                  <h2 className="titulo-seccion">Ganadores de nuestro sorteo – agosto 2025</h2>
-                  <GanadoresSorteo />
-                </>
-              }
-            />
-
-            <Route
-              path="*"
-              element={
-                <div style={{ textAlign: "center", padding: 24 }}>
-                  <h2>Página no encontrada</h2>
-                  <Link to="/">Volver al inicio</Link>
-                </div>
-              }
-            />
+            <Route path="/" element={<Home />} />
+            <Route path="/producto/:id" element={<ItemDetailContainer />} />
+            <Route path="/ganadores" element={<GanadoresSorteo />} />
+            <Route path="/cart" element={<Cart />} />
+        
+            <Route path="/monstera" element={<Navigate to="/producto/RPUtChv2ygrJpGS8Z5C6" replace />} />
+            <Route path="/sansevieria" element={<Navigate to="/producto/7vswZw1EX6hpWBpy2M5c" replace />} />
+            <Route path="/potus" element={<Navigate to="/producto/oo0i6FkjhO8uEadwqHvt" replace />} />
+            <Route path="/ficus" element={<Navigate to="/producto/QHqPM1aZtflaDppRN5rk" replace />} />
+            <Route path="/jazmin"  element={<Navigate to="/producto/8dDAibO7L4cdUiqJhyMS" replace />} />
+            <Route path="/lavanda" element={<Navigate to="/producto/EBciSrIpde40eJB2Mqeu" replace />} />
+            <Route path="/aloe" element={<Navigate to="/producto/b7FTtzaw409LFuxrTU5G" replace />} />
+            <Route path="/geranio" element={<Navigate to="/producto/OBzwIyom3yT3eBlGLawm" replace />} /><Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/checkout" element={<CheckoutForm />} />
+            <Route path="/categoria/:categoryId" element={<ItemListContainer />} />
           </Routes>
         </main>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </CartProvider>
   );
 }
